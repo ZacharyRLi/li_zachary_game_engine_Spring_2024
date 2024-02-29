@@ -34,6 +34,7 @@ class Game:
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.enemy = pg.sprite.Group()
+        self.healthboost = pg.sprite.Group()
         # self.player = Player(self, 10, 10)
         # for x in range(10, 20):
         #     Wall(self, x, 5)
@@ -44,7 +45,9 @@ class Game:
                 if tile == 'P':
                     self.player = Player(self, col, row)
                 if tile == 'E':
-                    self.enemy = Enemy(self, col, row)
+                    Enemy(self, col, row)
+                if tile == 'H':
+                    Healthboost(self, col, row)
     # define run method in game engine
     def run(self):
         self.playing = True
@@ -53,6 +56,15 @@ class Game:
             self.events()
             self.update()
             self.draw()
+    
+    def draw_text(self, surface, text, size, color, x, y):
+        font_name = pg.font.match_font('arial')
+        font = pg.font.Font(font_name, size)
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        text_rect.topleft = (x*TILESIZE,y*TILESIZE)
+        surface.blit(text_surface, text_rect)
+
     def quit(self):
         pg.quit()
         sys.exit()
@@ -72,6 +84,7 @@ class Game:
         self.screen.fill(BGCOLOR)
         self.draw_grid()
         self.all_sprites.draw(self.screen)
+        self.draw_text(self.screen, str(self.player.health), 64, WHITE, 1, 1)
         pg.display.flip()
     # player input
     def events(self):

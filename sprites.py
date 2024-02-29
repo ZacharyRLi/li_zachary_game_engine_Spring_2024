@@ -19,11 +19,12 @@ class Player(Sprite):
         self.game = game
         # defining coordinates/colour
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(YELLOW)
+        self.image.fill(BLUEGREEN)
         self.rect = self.image.get_rect()
         self.vx, self.vy = 0, 0
         self.x = x * TILESIZE
         self.y = y * TILESIZE
+        self.health = 100
 
     # def move(self, dx=0, dy=0):
     #     self.x += dx
@@ -44,6 +45,19 @@ class Player(Sprite):
             # sqrt2/2
             self.vx *= 0.7071
             self.vy *= 0.7071
+    
+    def collide_with_group(self, group, kill):
+        hits = pg.sprite.spritecollide(self, group, kill)
+        if hits:
+            if str(hits[0].__class__.__name__) == "Enemy":
+                self.health -= 1
+            if str(hits[0].__class__.__name__) == "Healthboost":
+                if self.health == 100:
+                    pass
+                elif self.health < 100 and self.health >= 80:
+                    self.health += 100-self.health
+                else:
+                    self.health += 20
 
     def collide_with_walls(self, dir):
         if dir == 'x':
@@ -77,6 +91,8 @@ class Player(Sprite):
         self.rect.y = self.y
         # add y colllision later
         self.collide_with_walls('y')
+        self.collide_with_group(self.game.enemy, False)
+        self.collide_with_group(self.game.healthboost, True)
 
 class Wall(Sprite):
     def __init__(self, game, x, y):
@@ -84,7 +100,7 @@ class Wall(Sprite):
         Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(YELLOW)
+        self.image.fill(TURQUOISE)
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
@@ -99,56 +115,38 @@ class Enemy(Sprite):
         self.game = game
         # defining coordinates/colour
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(RED)
+        self.image.fill(ROSE)
         self.rect = self.image.get_rect()
-        self.vx, self.vy = 0, 0
         self.x = x * TILESIZE
         self.y = y * TILESIZE
+        self.vx, self.vy = ENEMY_SPEED, 0
 
-    def enemy_move(self):
-        self.vx, self.vy = 0, 0
-        if ENEMY_DIR == True:
-            self.vx = ENEMY_SPEED
-        else:
-            self.vx = -ENEMY_SPEED
-        # sqrt2/2
-        self.vx *= 0.7071
-        self.vy *= 0.7071
-
-    def collide_with_walls(self, dir):
-        if dir == 'x':
-            hits = pg.sprite.spritecollide(self, self.game.walls, False)
-            if hits:
-                if self.vx > 0:
-                    ENEMY_DIR = False
-                    self.x = hits[0].rect.left - self.rect.width
-                if self.vx < 0:
-                    ENEMY_DIR = True
-                    self.x = hits[0].rect.right
-                self.vx = 0
-                self.rect.x = self.x
-        if dir == 'y':
-            hits = pg.sprite.spritecollide(self, self.game.walls, False)
-            if hits:
-                if self.vy > 0:
-                    self.y = hits[0].rect.top - self.rect.width
-                if self.vy < 0:
-                    self.y = hits[0].rect.bottom
-                self.vy = 0
-                self.rect.y = self.y
-
+    def collide_with_walls(self):
+        hits = pg.sprite.spritecollide(self, self.game.walls, False)
+        if hits:
+            self.vx *= -1
+            self.rect.x = self.x
 
     def update(self):
         # self.rect.x = self.x * TILESIZE
         # self.rect.y = self.y * TILESIZE
-        self.enemy_move()
         self.x += self.vx * self.game.dt
         self.y += self.vy * self.game.dt
         self.rect.x = self.x
-        # add x collision later
-        self.collide_with_walls('x')
+        self.collide_with_walls()
         self.rect.y = self.y
-        # add y colllision later
-        self.collide_with_walls('y')
+
+class Healthboost(Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.healthboost
+        Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(LIGHTYELLOW)
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
 
     
