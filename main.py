@@ -9,6 +9,7 @@ from random import randint
 from os import path
 
 # Data types: Int, String, float, Boolean
+# Coins / Money, Game Level, Speed Powerup
 
 
 # creating the game class
