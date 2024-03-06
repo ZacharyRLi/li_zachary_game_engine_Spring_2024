@@ -25,6 +25,7 @@ class Player(Sprite):
         self.x = x * TILESIZE
         self.y = y * TILESIZE
         self.health = 100
+        self.money = 0
 
     # def move(self, dx=0, dy=0):
     #     self.x += dx
@@ -58,6 +59,8 @@ class Player(Sprite):
                     self.health += 100-self.health
                 else:
                     self.health += 20
+            if str(hits[0].__class__.__name__) == "Coin":
+                self.money += 1
 
     def collide_with_walls(self, dir):
         if dir == 'x':
@@ -93,6 +96,7 @@ class Player(Sprite):
         self.collide_with_walls('y')
         self.collide_with_group(self.game.enemy, False)
         self.collide_with_group(self.game.healthboost, True)
+        self.collide_with_group(self.game.coin, True)
 
 class Wall(Sprite):
     def __init__(self, game, x, y):
@@ -142,7 +146,20 @@ class Healthboost(Sprite):
         Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(LIGHTYELLOW)
+        self.image.fill(GREEN)
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
+
+class Coin(Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.coin
+        Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y

@@ -36,6 +36,7 @@ class Game:
         self.walls = pg.sprite.Group()
         self.enemy = pg.sprite.Group()
         self.healthboost = pg.sprite.Group()
+        self.coin = pg.sprite.Group()
         # self.player = Player(self, 10, 10)
         # for x in range(10, 20):
         #     Wall(self, x, 5)
@@ -49,6 +50,8 @@ class Game:
                     Enemy(self, col, row)
                 if tile == 'H':
                     Healthboost(self, col, row)
+                if tile == 'C':
+                    Coin(self, col, row)
     # define run method in game engine
     def run(self):
         self.playing = True
@@ -86,6 +89,7 @@ class Game:
         self.draw_grid()
         self.all_sprites.draw(self.screen)
         self.draw_text(self.screen, str(self.player.health), 64, WHITE, 1, 1)
+        self.draw_text(self.screen, str(self.player.money), 64, WHITE, 28, 1)
         pg.display.flip()
     # player input
     def events(self):
