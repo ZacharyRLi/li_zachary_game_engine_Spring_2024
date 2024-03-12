@@ -101,6 +101,8 @@ class Player(Sprite):
         self.collide_with_group(self.game.healthboost, True)
         self.collide_with_group(self.game.coin, True)
         self.collide_with_group(self.game.mob, False)
+        if self.health <= 0:
+            pg.quit()
 
 class Wall(Sprite):
     def __init__(self, game, x, y):
