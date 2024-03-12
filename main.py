@@ -62,6 +62,9 @@ class Game:
             self.dt = self.clock.tick(FPS) / 1000
             self.events()
             self.update()
+            if self.player.health <= 0:
+                print('You Died :(')
+                self.quit()
             self.draw()
     
     def draw_text(self, surface, text, size, color, x, y):
@@ -122,8 +125,5 @@ while True:
     g.new()
     g.run()
     # g.show_go_screen()
-
-
-g.run()
 
     
