@@ -9,7 +9,7 @@ from random import randint
 from os import path
 
 # Data types: Int, String, float, Boolean
-# Coins / Money, Game Level, Speed Powerup
+# Coins / Money, Game Level, Speed Powerup, Enemy that chases me, Die at 0 healthpoints
 
 
 # creating the game class
@@ -37,6 +37,7 @@ class Game:
         self.enemy = pg.sprite.Group()
         self.healthboost = pg.sprite.Group()
         self.coin = pg.sprite.Group()
+        self.mob = pg.sprite.Group()
         # self.player = Player(self, 10, 10)
         # for x in range(10, 20):
         #     Wall(self, x, 5)
@@ -52,6 +53,8 @@ class Game:
                     Healthboost(self, col, row)
                 if tile == 'C':
                     Coin(self, col, row)
+                if tile == 'M':
+                    Mob(self, col, row)
     # define run method in game engine
     def run(self):
         self.playing = True

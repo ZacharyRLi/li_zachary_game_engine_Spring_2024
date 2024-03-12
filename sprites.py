@@ -5,6 +5,7 @@
 from settings import *
 import pygame as pg
 from pygame.sprite import Sprite
+import math
 
 # create a player class
 
@@ -52,6 +53,8 @@ class Player(Sprite):
         if hits:
             if str(hits[0].__class__.__name__) == "Enemy":
                 self.health -= 1
+            if str(hits[0].__class__.__name__) == "Mob":
+                self.health -= 1
             if str(hits[0].__class__.__name__) == "Healthboost":
                 if self.health == 100:
                     pass
@@ -97,6 +100,7 @@ class Player(Sprite):
         self.collide_with_group(self.game.enemy, False)
         self.collide_with_group(self.game.healthboost, True)
         self.collide_with_group(self.game.coin, True)
+        self.collide_with_group(self.game.mob, False)
 
 class Wall(Sprite):
     def __init__(self, game, x, y):
@@ -165,5 +169,39 @@ class Coin(Sprite):
         self.y = y
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
+        
+class Mob(Sprite):
+    # initiate player 
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.mob
+        Sprite.__init__(self, self.groups)
+        self.game = game
+        # defining coordinates/colour
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(RED)
+        self.rect = self.image.get_rect()
+        self.x = x * TILESIZE
+        self.y = y * TILESIZE
+        self.vx, self.vy = 0, 0
+    def move_towards_player(self, player):
+        # Find direction vector (dx, dy) between enemy and player.
+        # Find direction vector (dx, dy) between enemy and player.
+        dx, dy = self.game.player.rect.x - self.rect.x, self.game.player.rect.y - self.rect.y
+        dist = math.hypot(dx, dy)
+        if dist == 0:
+            self.x += dx * MOB_SPEED
+            self.y += dy * MOB_SPEED
+        elif dist >= 250:
+            pass
+        else:   
+            dx, dy = dx / dist, dy / dist  # Normalize.
+            self.x += dx * MOB_SPEED
+            self.y += dy * MOB_SPEED
 
+    def update(self):
+        self.move_towards_player(Player)
+        self.x += self.vx * self.game.dt
+        self.y += self.vy * self.game.dt
+        self.rect.x = self.x
+        self.rect.y = self.y
     
