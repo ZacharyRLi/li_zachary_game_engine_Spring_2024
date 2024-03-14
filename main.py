@@ -26,7 +26,7 @@ class Game:
     def load_data(self):
         game_folder = path.dirname(__file__)
         self.map_data = []
-        with open(path.join(game_folder, 'map.txt'), 'rt') as f:
+        with open(path.join(game_folder, 'LEVEL1.txt'), 'rt') as f:
             for line in f:
                 self.map_data.append(line)
 
@@ -34,10 +34,11 @@ class Game:
         # initiate all variables, setup groups, instantiate classes
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
-        self.enemy = pg.sprite.Group()
+        self.lava = pg.sprite.Group()
         self.healthboost = pg.sprite.Group()
         self.coin = pg.sprite.Group()
         self.mob = pg.sprite.Group()
+        self.portal = pg.sprite.Group()
         # self.player = Player(self, 10, 10)
         # for x in range(10, 20):
         #     Wall(self, x, 5)
@@ -47,14 +48,16 @@ class Game:
                     Wall(self, col, row)
                 if tile == 'P':
                     self.player = Player(self, col, row)
-                if tile == 'E':
-                    Enemy(self, col, row)
+                if tile == 'L':
+                    Lava(self, col, row)
                 if tile == 'H':
                     Healthboost(self, col, row)
                 if tile == 'C':
                     Coin(self, col, row)
                 if tile == 'M':
                     Mob(self, col, row)
+                if tile == 'X':
+                    Portal(self, col, row)
     # define run method in game engine
     def run(self):
         self.playing = True

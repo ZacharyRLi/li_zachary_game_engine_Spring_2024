@@ -51,7 +51,7 @@ class Player(Sprite):
     def collide_with_group(self, group, kill):
         hits = pg.sprite.spritecollide(self, group, kill)
         if hits:
-            if str(hits[0].__class__.__name__) == "Enemy":
+            if str(hits[0].__class__.__name__) == "Lava":
                 self.health -= 1
             if str(hits[0].__class__.__name__) == "Mob":
                 self.health -= 1
@@ -97,7 +97,7 @@ class Player(Sprite):
         self.rect.y = self.y
         # add y colllision later
         self.collide_with_walls('y')
-        self.collide_with_group(self.game.enemy, False)
+        self.collide_with_group(self.game.lava, False)
         self.collide_with_group(self.game.healthboost, True)
         self.collide_with_group(self.game.coin, True)
         self.collide_with_group(self.game.mob, False)
@@ -116,15 +116,15 @@ class Wall(Sprite):
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
 
-class Enemy(Sprite):
+class Lava(Sprite):
     # initiate player 
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.enemy
+        self.groups = game.all_sprites, game.lava
         Sprite.__init__(self, self.groups)
         self.game = game
         # defining coordinates/colour
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(ROSE)
+        self.image.fill(RED)
         self.rect = self.image.get_rect()
         self.x = x * TILESIZE
         self.y = y * TILESIZE
@@ -179,7 +179,7 @@ class Mob(Sprite):
         self.game = game
         # defining coordinates/colour
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(RED)
+        self.image.fill(ROSE)
         self.rect = self.image.get_rect()
         self.x = x * TILESIZE
         self.y = y * TILESIZE
@@ -192,7 +192,7 @@ class Mob(Sprite):
         if dist == 0:
             self.vx += dx * MOB_SPEED
             self.vy += dy * MOB_SPEED
-        elif dist >= 250:
+        elif dist >= 200:
             pass
         else:   
             dx, dy = dx / dist, dy / dist  # Normalize.
@@ -228,4 +228,16 @@ class Mob(Sprite):
         self.collide_with_walls('x')
         self.rect.y = self.y
         self.collide_with_walls('y')
-    
+
+class Portal(Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.portal
+        Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(PURPLE)
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
