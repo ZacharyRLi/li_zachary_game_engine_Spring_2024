@@ -190,19 +190,42 @@ class Mob(Sprite):
         dx, dy = self.game.player.rect.x - self.rect.x, self.game.player.rect.y - self.rect.y
         dist = math.hypot(dx, dy)
         if dist == 0:
-            self.x += dx * MOB_SPEED
-            self.y += dy * MOB_SPEED
+            self.vx += dx * MOB_SPEED
+            self.vy += dy * MOB_SPEED
         elif dist >= 250:
             pass
         else:   
             dx, dy = dx / dist, dy / dist  # Normalize.
-            self.x += dx * MOB_SPEED
-            self.y += dy * MOB_SPEED
+            self.vx += dx * MOB_SPEED
+            self.vy += dy * MOB_SPEED
+    def collide_with_walls(self, dir):
+        if dir == 'x':
+            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            if hits:
+                if self.vx > 0:
+                    self.x = hits[0].rect.left - self.rect.width
+                if self.vx < 0:
+                    self.x = hits[0].rect.right
+                self.vx = 0
+                self.rect.x = self.x
+        if dir == 'y':
+            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            if hits:
+                if self.vy > 0:
+                    self.y = hits[0].rect.top - self.rect.width
+                if self.vy < 0:
+                    self.y = hits[0].rect.bottom
+                self.vy = 0
+                self.rect.y = self.y
 
     def update(self):
+        self.vx = 0
+        self.vy = 0
         self.move_towards_player(Player)
         self.x += self.vx * self.game.dt
         self.y += self.vy * self.game.dt
         self.rect.x = self.x
+        self.collide_with_walls('x')
         self.rect.y = self.y
+        self.collide_with_walls('y')
     

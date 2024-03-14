@@ -4,7 +4,7 @@ TITLE = "my fun game"
 FPS = 30
 PLAYER_SPEED = 300
 ENEMY_SPEED = 200
-MOB_SPEED = 5
+MOB_SPEED = 200
 ENEMY_DIR = True
 # 32 grids wide
 WIDTH = 1024
