@@ -123,8 +123,8 @@ class Lava(Sprite):
         Sprite.__init__(self, self.groups)
         self.game = game
         # defining coordinates/colour
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(RED)
+        self.image = pg.image.load("fireball.png").convert_alpha()
+        self.image = pg.transform.scale(self.image, (50, 20))
         self.rect = self.image.get_rect()
         self.x = x * TILESIZE
         self.y = y * TILESIZE
@@ -133,6 +133,7 @@ class Lava(Sprite):
     def collide_with_walls(self):
         hits = pg.sprite.spritecollide(self, self.game.walls, False)
         if hits:
+            self.image = pg.transform.rotate(self.image, 180)
             self.vx *= -1
             self.rect.x = self.x
 

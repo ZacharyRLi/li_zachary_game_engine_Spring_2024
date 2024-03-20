@@ -30,6 +30,38 @@ class Game:
             for line in f:
                 self.map_data.append(line)
 
+    def change_level(self, lvl):
+        # kill all existing sprites first to save memory
+        for s in self.all_sprites:
+            s.kill()
+        # reset criteria for changing level
+        self.player.moneybag = 0
+        # reset map data list to empty
+        self.map_data = []
+        # open next level
+        with open(path.join(self.game_folder, lvl), 'rt') as f:
+            for line in f:
+                print(line)
+                self.map_data.append(line)
+        # repopulate the level with stuff
+        for row, tiles in enumerate(self.map_data):
+            for col, tile in enumerate(tiles):
+                if tile == '1':
+                    Wall(self, col, row)
+                if tile == 'P':
+                    self.player = Player(self, col, row)
+                if tile == 'L':
+                    Lava(self, col, row)
+                if tile == 'H':
+                    Healthboost(self, col, row)
+                if tile == 'C':
+                    Coin(self, col, row)
+                if tile == 'M':
+                    Mob(self, col, row)
+                if tile == 'X':
+                    Portal(self, col, row)
+                
+
     def new(self):
         # initiate all variables, setup groups, instantiate classes
         self.all_sprites = pg.sprite.Group()
