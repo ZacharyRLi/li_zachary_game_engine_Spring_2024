@@ -27,6 +27,7 @@ class Player(Sprite):
         self.y = y * TILESIZE
         self.health = 100
         self.money = 0
+        self.touch_change = False
 
     # def move(self, dx=0, dy=0):
     #     self.x += dx
@@ -49,6 +50,7 @@ class Player(Sprite):
             self.vy *= 0.7071
     
     def collide_with_group(self, group, kill):
+        # checks for collision with anything, and runs things based on what is colliding
         hits = pg.sprite.spritecollide(self, group, kill)
         if hits:
             if str(hits[0].__class__.__name__) == "Lava":
@@ -64,8 +66,12 @@ class Player(Sprite):
                     self.health += 20
             if str(hits[0].__class__.__name__) == "Coin":
                 self.money += 1
+            if str(hits[0].__class__.__name__) == "Portal" and self.money >= 5:
+                self.touch_change = True
+                
 
     def collide_with_walls(self, dir):
+        # collides with walls in x and y
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
             if hits:
@@ -101,6 +107,7 @@ class Player(Sprite):
         self.collide_with_group(self.game.healthboost, True)
         self.collide_with_group(self.game.coin, True)
         self.collide_with_group(self.game.mob, False)
+        self.collide_with_group(self.game.portal, False)
 
 
 class Wall(Sprite):
@@ -131,6 +138,7 @@ class Lava(Sprite):
         self.vx, self.vy = ENEMY_SPEED, 0
 
     def collide_with_walls(self):
+        # detects for collide with walls, and orients itself.
         hits = pg.sprite.spritecollide(self, self.game.walls, False)
         if hits:
             self.image = pg.transform.rotate(self.image, 180)
@@ -148,6 +156,7 @@ class Lava(Sprite):
 
 class Healthboost(Sprite):
     def __init__(self, game, x, y):
+        # initialises the function
         self.groups = game.all_sprites, game.healthboost
         Sprite.__init__(self, self.groups)
         self.game = game
@@ -188,6 +197,7 @@ class Mob(Sprite):
     def move_towards_player(self, player):
         # Find direction vector (dx, dy) between enemy and player.
         # Find direction vector (dx, dy) between enemy and player.
+        # it also has a radius of 200, so if the player goes to far, it will stop tracking.
         dx, dy = self.game.player.rect.x - self.rect.x, self.game.player.rect.y - self.rect.y
         dist = math.hypot(dx, dy)
         if dist == 0:
@@ -236,9 +246,17 @@ class Portal(Sprite):
         Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(PURPLE)
+        self.image.fill(LIGHT_PURPLE)
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
+    
+    def portal_update(self):
+        if self.game.player.money >= 5:
+            self.image.fill(PURPLE)
+
+    def update(self):
+        self.portal_update()
+        
