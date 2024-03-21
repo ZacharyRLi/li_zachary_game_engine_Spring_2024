@@ -26,6 +26,8 @@ class Game:
     def load_data(self):
         self.game_folder = path.dirname(__file__)
         self.map_data = []
+        self.image = pg.image.load("cave_bg.png").convert_alpha()
+        self.image = pg.transform.scale(self.image, (1024, 768))
         with open(path.join(self.game_folder, 'LEVEL1.txt'), 'rt') as f:
             for line in f:
                 self.map_data.append(line)
@@ -128,7 +130,7 @@ class Game:
             pg.draw.line(self.screen, LIGHTGREY, (0, y), (WIDTH, y))
     def draw(self):
         # Draws the background first and then all the sprites, because it draws the sprites over the background making them visible.
-        self.screen.fill(BGCOLOR)
+        self.screen.blit(self.image, (0, 0))
         self.draw_grid()
         self.all_sprites.draw(self.screen)
         self.draw_text(self.screen, str(self.player.health), 64, WHITE, 1, 1)

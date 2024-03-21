@@ -20,7 +20,8 @@ class Player(Sprite):
         self.game = game
         # defining coordinates/colour
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(BLUEGREEN)
+        self.image = pg.image.load("player.png").convert_alpha()
+        self.image = pg.transform.scale(self.image, (32, 32))
         self.rect = self.image.get_rect()
         self.vx, self.vy = 0, 0
         self.x = x * TILESIZE
@@ -116,7 +117,8 @@ class Wall(Sprite):
         Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(TURQUOISE)
+        self.image = pg.image.load("wall.jpg").convert_alpha()
+        self.image = pg.transform.scale(self.image, (32, 32))
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
@@ -131,7 +133,7 @@ class Lava(Sprite):
         self.game = game
         # defining coordinates/colour
         self.image = pg.image.load("fireball.png").convert_alpha()
-        self.image = pg.transform.scale(self.image, (50, 20))
+        self.image = pg.transform.scale(self.image, (50, 25))
         self.rect = self.image.get_rect()
         self.x = x * TILESIZE
         self.y = y * TILESIZE
@@ -161,7 +163,8 @@ class Healthboost(Sprite):
         Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(GREEN)
+        self.image = pg.image.load("healthboost.png").convert_alpha()
+        self.image = pg.transform.scale(self.image, (80, 80))
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
@@ -174,7 +177,8 @@ class Coin(Sprite):
         Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(YELLOW)
+        self.image = pg.image.load("coin.png").convert_alpha()
+        self.image = pg.transform.scale(self.image, (32, 32))
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
@@ -189,7 +193,8 @@ class Mob(Sprite):
         self.game = game
         # defining coordinates/colour
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(ROSE)
+        self.image = pg.image.load("mob.png").convert_alpha()
+        self.image = pg.transform.scale(self.image, (50, 50))
         self.rect = self.image.get_rect()
         self.x = x * TILESIZE
         self.y = y * TILESIZE
@@ -246,7 +251,8 @@ class Portal(Sprite):
         Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(LIGHT_PURPLE)
+        self.image = pg.image.load("portal_closed.png").convert_alpha()
+        self.image = pg.transform.scale(self.image, (175, 75))
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
@@ -255,7 +261,8 @@ class Portal(Sprite):
     
     def portal_update(self):
         if self.game.player.money >= 5:
-            self.image.fill(PURPLE)
+            self.image = pg.image.load("portal_open.png").convert_alpha()
+            self.image = pg.transform.scale(self.image, (175, 75))
 
     def update(self):
         self.portal_update()
