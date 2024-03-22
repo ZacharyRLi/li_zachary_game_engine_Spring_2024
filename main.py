@@ -92,6 +92,7 @@ class Game:
                     Portal(self, col, row)
     # define run method in game engine
     def run(self):
+        # run method. all important mechanics that need to be checked go here.
         self.playing = True
         while self.playing:
             self.dt = self.clock.tick(FPS) / 1000
@@ -112,6 +113,7 @@ class Game:
         surface.blit(text_surface, text_rect)
 
     def quit(self):
+        # quit function calls all to quit
         pg.quit()
         sys.exit()
 
@@ -153,6 +155,7 @@ class Game:
             #         self.player.move(dy=-1)
 
     def show_start_screen(self):
+        # pauses all until input
         self.screen.fill(BGCOLOR)
         self.draw_text(self.screen, "This is the start screen - press any key to play", 24, WHITE, WIDTH/1500, HEIGHT/1500)
         pg.display.flip()

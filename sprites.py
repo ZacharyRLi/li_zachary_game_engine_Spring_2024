@@ -35,6 +35,7 @@ class Player(Sprite):
     #     self.y += dy
     
     def get_keys(self):
+        # gets all the key functions and changes the velocity based on it.
         self.vx, self.vy = 0, 0
         keys = pg.key.get_pressed()
         if keys[pg.K_LEFT] or keys[pg.K_a]:
@@ -113,6 +114,7 @@ class Player(Sprite):
 
 class Wall(Sprite):
     def __init__(self, game, x, y):
+        # initialize wall class
         self.groups = game.all_sprites, game.walls
         Sprite.__init__(self, self.groups)
         self.game = game
@@ -126,12 +128,12 @@ class Wall(Sprite):
         self.rect.y = y * TILESIZE
 
 class Lava(Sprite):
-    # initiate player 
+    # initiate lava
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.lava
         Sprite.__init__(self, self.groups)
         self.game = game
-        # defining coordinates/colour
+        # defining coordinates/image
         self.image = pg.image.load("fireball.png").convert_alpha()
         self.image = pg.transform.scale(self.image, (50, 25))
         self.rect = self.image.get_rect()
@@ -148,6 +150,7 @@ class Lava(Sprite):
             self.rect.x = self.x
 
     def update(self):
+        # updates the entire lava under all sprites
         # self.rect.x = self.x * TILESIZE
         # self.rect.y = self.y * TILESIZE
         self.x += self.vx * self.game.dt
@@ -172,6 +175,7 @@ class Healthboost(Sprite):
         self.rect.y = y * TILESIZE
 
 class Coin(Sprite):
+    # coin just stays there until someone catches it.
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.coin
         Sprite.__init__(self, self.groups)
@@ -215,6 +219,7 @@ class Mob(Sprite):
             self.vx += dx * MOB_SPEED
             self.vy += dy * MOB_SPEED
     def collide_with_walls(self, dir):
+        # the mob needs to collide with walls to not be op so we ported it
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
             if hits:
@@ -247,6 +252,7 @@ class Mob(Sprite):
 
 class Portal(Sprite):
     def __init__(self, game, x, y):
+        # portal with closed image
         self.groups = game.all_sprites, game.portal
         Sprite.__init__(self, self.groups)
         self.game = game
@@ -260,6 +266,7 @@ class Portal(Sprite):
         self.rect.y = y * TILESIZE
     
     def portal_update(self):
+        # opens when money >= 5
         if self.game.player.money >= 5:
             self.image = pg.image.load("portal_open.png").convert_alpha()
             self.image = pg.transform.scale(self.image, (175, 75))
