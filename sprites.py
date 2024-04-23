@@ -6,10 +6,27 @@ from settings import *
 import pygame as pg
 from pygame.sprite import Sprite
 import math
+from os import path
 
 # create a player class
 
-# create a wall class
+SPRITESHEET = "anim_player.png"
+# needed for animated sprite
+game_folder = path.dirname(__file__)
+img_folder = path.join(game_folder, 'images')
+# needed for animated sprite
+class Spritesheet:
+    # utility class for loading and parsing spritesheets
+    def __init__(self, filename):
+        self.spritesheet = pg.image.load(filename).convert_alpha()
+
+    def get_image(self, x, y, width, height):
+        # grab an image out of a larger spritesheet
+        image = pg.Surface((width, height))
+        image.blit(self.spritesheet, (0, 0), (x, y, width, height))
+        # image = pg.transform.scale(image, (width, height))
+        image = pg.transform.scale(image, (width * 1, height * 1))
+        return image
 
 # player is in sprite class now.
 class Player(Sprite):
@@ -20,8 +37,10 @@ class Player(Sprite):
         self.game = game
         # defining coordinates/colour
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image = pg.image.load("player.png").convert_alpha()
-        self.image = pg.transform.scale(self.image, (32, 32))
+        self.spritesheet = Spritesheet(path.join(img_folder, SPRITESHEET))
+        # needed for animated sprite
+        self.load_images()
+        self.image = self.standing_frames[0]
         self.rect = self.image.get_rect()
         self.vx, self.vy = 0, 0
         self.x = x * TILESIZE
@@ -29,6 +48,15 @@ class Player(Sprite):
         self.health = 100
         self.money = 0
         self.touch_change = False
+        # needed for animated sprite
+        self.current_frame = 0
+        # needed for animated sprite
+        self.last_update = 0
+        self.material = True
+        # needed for animated sprite
+        self.jumping = False
+        # needed for animated sprite
+        self.walking = False
 
     # def move(self, dx=0, dy=0):
     #     self.x += dx
@@ -93,9 +121,28 @@ class Player(Sprite):
                 self.vy = 0
                 self.rect.y = self.y
 
+    def load_images(self):
+        self.standing_frames = [self.spritesheet.get_image(0,0, 32, 32), 
+                                self.spritesheet.get_image(32,0, 32, 32)]
+        # for frame in self.standing_frames:
+        #     frame.set_colorkey(BLACK)
+
+        # add other frame sets for different poses etc.
+    # needed for animated sprite        
+    def animate(self):
+        now = pg.time.get_ticks()
+        if now - self.last_update > 900:
+            self.last_update = now
+            self.current_frame = (self.current_frame + 1) % len(self.standing_frames)
+            bottom = self.rect.bottom
+            self.image = self.standing_frames[self.current_frame]
+            self.rect = self.image.get_rect()
+            self.rect.bottom = bottom
+
     def update(self):
         # self.rect.x = self.x * TILESIZE
         # self.rect.y = self.y * TILESIZE
+        self.animate()
         self.get_keys()
         self.x += self.vx * self.game.dt
         self.y += self.vy * self.game.dt
@@ -119,7 +166,7 @@ class Wall(Sprite):
         Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image = pg.image.load("wall.jpg").convert_alpha()
+        self.image = self.game.wall_image
         self.image = pg.transform.scale(self.image, (32, 32))
         self.rect = self.image.get_rect()
         self.x = x
@@ -134,7 +181,7 @@ class Lava(Sprite):
         Sprite.__init__(self, self.groups)
         self.game = game
         # defining coordinates/image
-        self.image = pg.image.load("fireball.png").convert_alpha()
+        self.image = self.game.fireball_image
         self.image = pg.transform.scale(self.image, (50, 25))
         self.rect = self.image.get_rect()
         self.x = x * TILESIZE
@@ -166,7 +213,7 @@ class Healthboost(Sprite):
         Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image = pg.image.load("healthboost.png").convert_alpha()
+        self.image = self.game.healthboost_image
         self.image = pg.transform.scale(self.image, (80, 80))
         self.rect = self.image.get_rect()
         self.x = x
@@ -181,7 +228,7 @@ class Coin(Sprite):
         Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image = pg.image.load("coin.png").convert_alpha()
+        self.image = self.game.coin_image
         self.image = pg.transform.scale(self.image, (32, 32))
         self.rect = self.image.get_rect()
         self.x = x
@@ -197,7 +244,7 @@ class Mob(Sprite):
         self.game = game
         # defining coordinates/colour
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image = pg.image.load("mob.png").convert_alpha()
+        self.image = self.game.mob_image
         self.image = pg.transform.scale(self.image, (50, 50))
         self.rect = self.image.get_rect()
         self.x = x * TILESIZE
@@ -257,7 +304,7 @@ class Portal(Sprite):
         Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image = pg.image.load("portal_closed.png").convert_alpha()
+        self.image = self.game.portal_closed_image
         self.image = pg.transform.scale(self.image, (175, 75))
         self.rect = self.image.get_rect()
         self.x = x
@@ -268,7 +315,7 @@ class Portal(Sprite):
     def portal_update(self):
         # opens when money >= 5
         if self.game.player.money >= 5:
-            self.image = pg.image.load("portal_open.png").convert_alpha()
+            self.image = self.game.portal_open_image
             self.image = pg.transform.scale(self.image, (175, 75))
 
     def update(self):

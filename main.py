@@ -9,7 +9,7 @@ from random import randint
 from os import path
 
 # Data types: Int, String, float, Boolean
-# Coins / Money, Game Level, Speed Powerup, Enemy that chases me, Die at 0 healthpoints
+# Adding a better progression system with a gambling and progression of player health/armor/speed system, and overall progression to reach a boss fight.
 
 
 # creating the game class
@@ -25,9 +25,17 @@ class Game:
     # load save game data
     def load_data(self):
         self.game_folder = path.dirname(__file__)
+        self.img_folder = path.join(game_folder, 'images')
         self.map_data = []
-        self.image = pg.image.load("cave_bg.png").convert_alpha()
-        self.image = pg.transform.scale(self.image, (1024, 768))
+        self.bg_image = pg.image.load(path.join(self.img_folder, "cave_bg.png")).convert_alpha()
+        self.bg_image = pg.transform.scale(self.bg_image, (1024, 768))
+        self.wall_image = pg.image.load(path.join(self.img_folder, "wall.jpg")).convert_alpha()
+        self.fireball_image = pg.image.load(path.join(self.img_folder, "fireball.png")).convert_alpha()
+        self.healthboost_image = pg.image.load(path.join(self.img_folder,"healthboost.png")).convert_alpha()
+        self.coin_image = pg.image.load(path.join(self.img_folder, "coin.png")).convert_alpha()
+        self.mob_image = pg.image.load(path.join(self.img_folder, "mob.png")).convert_alpha()
+        self.portal_closed_image = pg.image.load(path.join(self.img_folder, "portal_closed.png")).convert_alpha()
+        self.portal_open_image = pg.image.load(path.join(self.img_folder, "portal_open.png")).convert_alpha()
         with open(path.join(self.game_folder, 'LEVEL1.txt'), 'rt') as f:
             for line in f:
                 self.map_data.append(line)
@@ -132,7 +140,7 @@ class Game:
             pg.draw.line(self.screen, LIGHTGREY, (0, y), (WIDTH, y))
     def draw(self):
         # Draws the background first and then all the sprites, because it draws the sprites over the background making them visible.
-        self.screen.blit(self.image, (0, 0))
+        self.screen.blit(self.bg_image, (0, 0))
         self.draw_grid()
         self.all_sprites.draw(self.screen)
         self.draw_text(self.screen, str(self.player.health), 64, WHITE, 1, 1)
