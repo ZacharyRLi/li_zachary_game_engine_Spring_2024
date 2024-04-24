@@ -9,7 +9,7 @@ from random import randint
 from os import path
 
 # Data types: Int, String, float, Boolean
-# Adding a better progression system with a gambling and progression of player health/armor/speed system, and overall progression to reach a boss fight.
+# Adding Puzzle elements and dialogue
 
 
 # creating the game class
