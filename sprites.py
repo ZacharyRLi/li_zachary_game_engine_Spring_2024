@@ -153,6 +153,7 @@ class Player(Sprite):
             self.current_frame = (self.current_frame + 1) % len(self.standing_frames)
             bottom = self.rect.bottom
             self.image = self.standing_frames[self.current_frame]
+            self.image.set_colorkey(pg.Color(245, 233, 12))
             self.rect = self.image.get_rect()
             self.rect.bottom = bottom
 
@@ -283,6 +284,7 @@ class Coin(Sprite):
             self.current_frame = (self.current_frame + 1) % len(self.standing_frames)
             bottom = self.rect.bottom
             self.image = self.standing_frames[self.current_frame]
+            self.image.set_colorkey(pg.Color(245, 233, 12))
             self.rect = self.image.get_rect()
             self.rect.bottom = bottom
     def update(self):
@@ -393,6 +395,7 @@ class Button(Sprite):
         self.rect.y = y * TILESIZE
         bottom = self.rect.bottom
         self.image = self.button[0]
+        self.image.set_colorkey(pg.Color(245, 233, 12))
         self.rect = self.image.get_rect()
         self.rect.bottom = bottom
         self.down = False
@@ -407,12 +410,14 @@ class Button(Sprite):
                 self.down = True
                 bottom = self.rect.bottom
                 self.image = self.button[1]
+                self.image.set_colorkey(pg.Color(245, 233, 12))
                 self.rect = self.image.get_rect()
                 self.rect.bottom = bottom
         else:
             self.down = False
             bottom = self.rect.bottom
             self.image = self.button[0]
+            self.image.set_colorkey(pg.Color(245, 233, 12))
             self.rect = self.image.get_rect()
             self.rect.bottom = bottom
 

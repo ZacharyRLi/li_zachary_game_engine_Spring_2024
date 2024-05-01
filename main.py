@@ -32,7 +32,6 @@ class Game:
         self.wall_image = pg.image.load(path.join(self.img_folder, "wall.jpg")).convert_alpha()
         self.fireball_image = pg.image.load(path.join(self.img_folder, "fireball.png")).convert_alpha()
         self.healthboost_image = pg.image.load(path.join(self.img_folder,"healthboost.png")).convert_alpha()
-        self.coin_image = pg.image.load(path.join(self.img_folder, "coin.png")).convert_alpha()
         self.mob_image = pg.image.load(path.join(self.img_folder, "mob.png")).convert_alpha()
         self.portal_closed_image = pg.image.load(path.join(self.img_folder, "portal_closed.png")).convert_alpha()
         self.portal_open_image = pg.image.load(path.join(self.img_folder, "portal_open.png")).convert_alpha()
@@ -72,7 +71,7 @@ class Game:
                 if tile == 'E':
                     Pushable(self, col, row)
                 if tile == 'B':
-                    Button(self, col, row)
+                    self.button = Button(self, col, row)
                 
 
     def new(self):
