@@ -10,7 +10,6 @@ from os import path
 
 # create a player class
 
-SPRITESHEET = "anim_player.png"
 # needed for animated sprite
 game_folder = path.dirname(__file__)
 img_folder = path.join(game_folder, 'images')
@@ -37,7 +36,7 @@ class Player(Sprite):
         self.game = game
         # defining coordinates/colour
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.spritesheet = Spritesheet(path.join(img_folder, SPRITESHEET))
+        self.spritesheet = Spritesheet(path.join(img_folder, "anim_player.png"))
         # needed for animated sprite
         self.load_images()
         self.image = self.standing_frames[0]
@@ -120,6 +119,24 @@ class Player(Sprite):
                     self.y = hits[0].rect.bottom
                 self.vy = 0
                 self.rect.y = self.y
+    def collide_with_pushable(self, dir):
+        # collides with pushable and pushes it.
+        hits = pg.sprite.spritecollide(self, self.game.pushable, False)
+        for hit in hits:
+            if dir == 'x':
+                if self.vx > 0:  # Moving right
+                    while pg.sprite.spritecollide(self, self.game.pushable, False):
+                        hit.rect.left += 1
+                elif self.vx < 0:  # Moving left
+                    while pg.sprite.spritecollide(self, self.game.pushable, False):
+                        hit.rect.right -= 1
+            if dir == 'y':
+                if self.vy > 0:  # Moving down
+                    while pg.sprite.spritecollide(self, self.game.pushable, False):
+                        hit.rect.top += 1
+                elif self.vy < 0:  # Moving up
+                    while pg.sprite.spritecollide(self, self.game.pushable, False):
+                        hit.rect.bottom -= 1
 
     def load_images(self):
         self.standing_frames = [self.spritesheet.get_image(0,0, 32, 32), 
@@ -152,6 +169,8 @@ class Player(Sprite):
         self.rect.y = self.y
         # add y colllision later
         self.collide_with_walls('y')
+        self.collide_with_pushable('x')
+        self.collide_with_pushable('y')
         self.collide_with_group(self.game.lava, False)
         self.collide_with_group(self.game.healthboost, True)
         self.collide_with_group(self.game.coin, True)
@@ -228,13 +247,48 @@ class Coin(Sprite):
         Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image = self.game.coin_image
-        self.image = pg.transform.scale(self.image, (32, 32))
+        self.spritesheet = Spritesheet(path.join(img_folder, "anim_coin.png"))
+        self.load_images()
+        self.image = self.standing_frames[0]
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
+        self.current_frame = 0
+        # needed for animated sprite
+        self.last_update = 0
+    
+    def load_images(self):
+        self.standing_frames = [self.spritesheet.get_image(0, 0, 32, 32), 
+                                self.spritesheet.get_image(32, 0, 32, 32),
+                                self.spritesheet.get_image(64, 0, 32, 32),
+                                self.spritesheet.get_image(96, 0, 32, 32),
+                                self.spritesheet.get_image(0, 32, 32, 32),
+                                self.spritesheet.get_image(32, 32, 32, 32),
+                                self.spritesheet.get_image(64, 32, 32, 32),
+                                self.spritesheet.get_image(96, 32, 32, 32),
+                                self.spritesheet.get_image(0, 64, 32, 32),
+                                self.spritesheet.get_image(32, 64, 32, 32),
+                                self.spritesheet.get_image(64,64, 32, 32)]
+        # for frame in self.standing_frames:
+        #     frame.set_colorkey(BLACK)
+
+        # add other frame sets for different poses etc.
+    # needed for animated sprite        
+    def animate(self):
+        now = pg.time.get_ticks()
+        if now - self.last_update > 100:
+            self.last_update = now
+            self.current_frame = (self.current_frame + 1) % len(self.standing_frames)
+            bottom = self.rect.bottom
+            self.image = self.standing_frames[self.current_frame]
+            self.rect = self.image.get_rect()
+            self.rect.bottom = bottom
+    def update(self):
+        self.animate()
+        self.rect.x = self.x * TILESIZE
+        self.rect.y = self.y * TILESIZE
         
 class Mob(Sprite):
     # initiate player 
@@ -320,4 +374,21 @@ class Portal(Sprite):
 
     def update(self):
         self.portal_update()
+
+        
+
+class Pushable(Sprite):
+    def __init__(self, game, x, y):
+        # initialises the function
+        self.groups = game.all_sprites, game.pushable
+        Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image = self.game.pushable_image
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
+    
         

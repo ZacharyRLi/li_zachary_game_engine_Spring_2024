@@ -36,6 +36,8 @@ class Game:
         self.mob_image = pg.image.load(path.join(self.img_folder, "mob.png")).convert_alpha()
         self.portal_closed_image = pg.image.load(path.join(self.img_folder, "portal_closed.png")).convert_alpha()
         self.portal_open_image = pg.image.load(path.join(self.img_folder, "portal_open.png")).convert_alpha()
+        self.pushable_image = pg.image.load(path.join(self.img_folder, "pushable.png")).convert_alpha()
+
         with open(path.join(self.game_folder, 'LEVEL1.txt'), 'rt') as f:
             for line in f:
                 self.map_data.append(line)
@@ -67,6 +69,8 @@ class Game:
                     Mob(self, col, row)
                 if tile == 'X':
                     Portal(self, col, row)
+                if tile == 'E':
+                    Pushable(self, col, row)
                 
 
     def new(self):
@@ -78,6 +82,7 @@ class Game:
         self.coin = pg.sprite.Group()
         self.mob = pg.sprite.Group()
         self.portal = pg.sprite.Group()
+        self.pushable = pg.sprite.Group()
         # self.player = Player(self, 10, 10)
         # for x in range(10, 20):
         #     Wall(self, x, 5)
@@ -98,6 +103,8 @@ class Game:
                     Mob(self, col, row)
                 if tile == 'X':
                     Portal(self, col, row)
+                if tile == 'E':
+                    Pushable(self, col, row)
     # define run method in game engine
     def run(self):
         # run method. all important mechanics that need to be checked go here.
