@@ -95,7 +95,7 @@ class Player(Sprite):
                     self.health += 20
             if str(hits[0].__class__.__name__) == "Coin":
                 self.money += 1
-            if str(hits[0].__class__.__name__) == "Portal" and self.money >= 5:
+            if str(hits[0].__class__.__name__) == "Portal" and self.game.button.down == True:
                 self.touch_change = True
                 
 
@@ -368,14 +368,58 @@ class Portal(Sprite):
     
     def portal_update(self):
         # opens when money >= 5
-        if self.game.player.money >= 5:
+        if self.game.button.down:
             self.image = self.game.portal_open_image
             self.image = pg.transform.scale(self.image, (175, 75))
-
+        else:
+            self.image = self.game.portal_closed_image
+            self.image = pg.transform.scale(self.image, (175, 75))
     def update(self):
         self.portal_update()
 
-        
+class Button(Sprite):
+    def __init__(self, game, x, y):
+        # initialises the function
+        self.groups = game.all_sprites, game.button
+        Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.spritesheet = Spritesheet(path.join(img_folder, "button.png"))
+        self.load_images()
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
+        bottom = self.rect.bottom
+        self.image = self.button[0]
+        self.rect = self.image.get_rect()
+        self.rect.bottom = bottom
+        self.down = False
+    def load_images(self):
+        self.button = [self.spritesheet.get_image(32, 96, 32, 32), 
+                        self.spritesheet.get_image(32,224, 32, 32)]
+    def collide_with_group(self, group, kill):
+        # checks for collision with anything, and runs things based on what is colliding
+        hits = pg.sprite.spritecollide(self, group, kill)
+        if hits:
+            if str(hits[0].__class__.__name__) == "Pushable":
+                self.down = True
+                bottom = self.rect.bottom
+                self.image = self.button[1]
+                self.rect = self.image.get_rect()
+                self.rect.bottom = bottom
+        else:
+            self.down = False
+            bottom = self.rect.bottom
+            self.image = self.button[0]
+            self.rect = self.image.get_rect()
+            self.rect.bottom = bottom
+
+    def update(self):
+        self.collide_with_group(self.game.pushable, False)
+        self.rect.x = self.x * TILESIZE
+        self.rect.y = self.y * TILESIZE
 
 class Pushable(Sprite):
     def __init__(self, game, x, y):

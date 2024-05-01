@@ -71,6 +71,8 @@ class Game:
                     Portal(self, col, row)
                 if tile == 'E':
                     Pushable(self, col, row)
+                if tile == 'B':
+                    Button(self, col, row)
                 
 
     def new(self):
@@ -83,6 +85,7 @@ class Game:
         self.mob = pg.sprite.Group()
         self.portal = pg.sprite.Group()
         self.pushable = pg.sprite.Group()
+        self.button = pg.sprite.Group()
         # self.player = Player(self, 10, 10)
         # for x in range(10, 20):
         #     Wall(self, x, 5)
@@ -105,6 +108,8 @@ class Game:
                     Portal(self, col, row)
                 if tile == 'E':
                     Pushable(self, col, row)
+                if tile == 'B':
+                    self.button = Button(self, col, row)
     # define run method in game engine
     def run(self):
         # run method. all important mechanics that need to be checked go here.
