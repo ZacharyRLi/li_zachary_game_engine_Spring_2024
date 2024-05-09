@@ -140,7 +140,13 @@ class Player(Sprite):
 
     def load_images(self):
         self.standing_frames = [self.spritesheet.get_image(0,0, 32, 32), 
-                                self.spritesheet.get_image(32,0, 32, 32)]
+                                self.spritesheet.get_image(32,0, 32, 32),
+                                self.spritesheet.get_image(64,0, 32, 32),
+                                self.spritesheet.get_image(96,0, 32, 32),
+                                self.spritesheet.get_image(128,0, 32, 32),
+                                self.spritesheet.get_image(160,0, 32, 32),
+                                self.spritesheet.get_image(192,0, 32, 32),
+                                self.spritesheet.get_image(224,0, 32, 32)]
         # for frame in self.standing_frames:
         #     frame.set_colorkey(BLACK)
 
@@ -148,11 +154,10 @@ class Player(Sprite):
     # needed for animated sprite        
     def animate(self):
         now = pg.time.get_ticks()
-        if now - self.last_update > 900:
+        if now - self.last_update > 100:
             self.last_update = now
             self.current_frame = (self.current_frame + 1) % len(self.standing_frames)
             bottom = self.rect.bottom
-            self.image = self.standing_frames[self.current_frame]
             self.image.set_colorkey(pg.Color(245, 233, 12))
             self.rect = self.image.get_rect()
             self.rect.bottom = bottom
@@ -382,7 +387,7 @@ class Portal(Sprite):
 class Button(Sprite):
     def __init__(self, game, x, y):
         # initialises the function
-        self.groups = game.all_sprites, game.button
+        self.groups = game.all_sprites, game.buttons
         Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))

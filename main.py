@@ -84,7 +84,7 @@ class Game:
         self.mob = pg.sprite.Group()
         self.portal = pg.sprite.Group()
         self.pushable = pg.sprite.Group()
-        self.button = pg.sprite.Group()
+        self.buttons = pg.sprite.Group()
         # self.player = Player(self, 10, 10)
         # for x in range(10, 20):
         #     Wall(self, x, 5)
