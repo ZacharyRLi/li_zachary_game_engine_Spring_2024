@@ -515,7 +515,7 @@ class Pushable(Sprite):
     
 class Piston(Sprite):
     def __init__(self, game, x, y):
-        # initialize wall class
+        # initialize piston class
         self.groups = game.all_sprites, game.pistons
         Sprite.__init__(self, self.groups)
         self.game = game
@@ -528,5 +528,6 @@ class Piston(Sprite):
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
     def update(self):
+        # if the button is down, it kills it so it "retracts"
         if self.game.buttonpiston.downpiston == True:
             self.kill()

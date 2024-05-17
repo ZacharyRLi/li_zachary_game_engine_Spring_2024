@@ -199,6 +199,7 @@ class Game:
         self.wait_for_key()
 
     def wait_for_key(self):
+        # this adds the key wait function at the beginning of the game
         waiting = True
         while waiting:
             self.clock.tick(FPS)
