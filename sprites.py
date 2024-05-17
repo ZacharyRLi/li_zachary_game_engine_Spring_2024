@@ -119,6 +119,26 @@ class Player(Sprite):
                     self.y = hits[0].rect.bottom
                 self.vy = 0
                 self.rect.y = self.y
+    def collide_with_pistons(self, dir):
+        # collides with walls in x and y
+        if dir == 'x':
+            hits = pg.sprite.spritecollide(self, self.game.pistons, False)
+            if hits:
+                if self.vx > 0:
+                    self.x = hits[0].rect.left - self.rect.width
+                if self.vx < 0:
+                    self.x = hits[0].rect.right
+                self.vx = 0
+                self.rect.x = self.x
+        if dir == 'y':
+            hits = pg.sprite.spritecollide(self, self.game.pistons, False)
+            if hits:
+                if self.vy > 0:
+                    self.y = hits[0].rect.top - self.rect.width
+                if self.vy < 0:
+                    self.y = hits[0].rect.bottom
+                self.vy = 0
+                self.rect.y = self.y
     def collide_with_pushable(self, dir):
         # collides with pushable and pushes it.
         hits = pg.sprite.spritecollide(self, self.game.pushable, False)
@@ -139,14 +159,11 @@ class Player(Sprite):
                         hit.rect.bottom -= 1
 
     def load_images(self):
-        self.standing_frames = [self.spritesheet.get_image(0,0, 32, 32), 
-                                self.spritesheet.get_image(32,0, 32, 32),
-                                self.spritesheet.get_image(64,0, 32, 32),
-                                self.spritesheet.get_image(96,0, 32, 32),
-                                self.spritesheet.get_image(128,0, 32, 32),
-                                self.spritesheet.get_image(160,0, 32, 32),
-                                self.spritesheet.get_image(192,0, 32, 32),
-                                self.spritesheet.get_image(224,0, 32, 32)]
+        self.standing_frames = [self.spritesheet.get_image(0, 0, 32, 32), 
+                                self.spritesheet.get_image(32, 0, 32, 32),
+                                self.spritesheet.get_image(0, 32, 32, 32),
+                                self.spritesheet.get_image(32, 32, 32, 32),]
+
         # for frame in self.standing_frames:
         #     frame.set_colorkey(BLACK)
 
@@ -154,10 +171,11 @@ class Player(Sprite):
     # needed for animated sprite        
     def animate(self):
         now = pg.time.get_ticks()
-        if now - self.last_update > 100:
+        if now - self.last_update > 350:
             self.last_update = now
             self.current_frame = (self.current_frame + 1) % len(self.standing_frames)
             bottom = self.rect.bottom
+            self.image = self.standing_frames[self.current_frame]
             self.image.set_colorkey(pg.Color(245, 233, 12))
             self.rect = self.image.get_rect()
             self.rect.bottom = bottom
@@ -172,9 +190,12 @@ class Player(Sprite):
         self.rect.x = self.x
         # add x collision later
         self.collide_with_walls('x')
+        self.collide_with_pistons('x')
+
         self.rect.y = self.y
         # add y colllision later
         self.collide_with_walls('y')
+        self.collide_with_pistons('y')
         self.collide_with_pushable('x')
         self.collide_with_pushable('y')
         self.collide_with_group(self.game.lava, False)
@@ -431,6 +452,53 @@ class Button(Sprite):
         self.rect.x = self.x * TILESIZE
         self.rect.y = self.y * TILESIZE
 
+class Buttonpiston(Sprite):
+    def __init__(self, game, x, y):
+        # initialises the function
+        self.groups = game.all_sprites, game.buttonpistons
+        Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.spritesheet = Spritesheet(path.join(img_folder, "button.png"))
+        self.load_images()
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
+        bottom = self.rect.bottom
+        self.image = self.button[0]
+        self.image.set_colorkey(pg.Color(245, 233, 12))
+        self.rect = self.image.get_rect()
+        self.rect.bottom = bottom
+        self.downpiston = False
+    def load_images(self):
+        self.button = [self.spritesheet.get_image(32, 64, 32, 32), 
+                        self.spritesheet.get_image(32,192, 32, 32)]
+    def collide_with_group(self, group, kill):
+        # checks for collision with anything, and runs things based on what is colliding
+        hits = pg.sprite.spritecollide(self, group, kill)
+        if hits:
+            if str(hits[0].__class__.__name__) == "Pushable":
+                self.downpiston = True
+                bottom = self.rect.bottom
+                self.image = self.button[1]
+                self.image.set_colorkey(pg.Color(245, 233, 12))
+                self.rect = self.image.get_rect()
+                self.rect.bottom = bottom
+        else:
+            self.downpiston = False
+            bottom = self.rect.bottom
+            self.image = self.button[0]
+            self.image.set_colorkey(pg.Color(245, 233, 12))
+            self.rect = self.image.get_rect()
+            self.rect.bottom = bottom
+
+    def update(self):
+        self.collide_with_group(self.game.pushable, False)
+        self.rect.x = self.x * TILESIZE
+        self.rect.y = self.y * TILESIZE
+
 class Pushable(Sprite):
     def __init__(self, game, x, y):
         # initialises the function
@@ -445,4 +513,20 @@ class Pushable(Sprite):
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
     
-        
+class Piston(Sprite):
+    def __init__(self, game, x, y):
+        # initialize wall class
+        self.groups = game.all_sprites, game.pistons
+        Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image = self.game.piston_image
+        self.image = pg.transform.scale(self.image, (32, 32))
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
+    def update(self):
+        if self.game.buttonpiston.downpiston == True:
+            self.kill()

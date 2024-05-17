@@ -30,6 +30,7 @@ class Game:
         self.bg_image = pg.image.load(path.join(self.img_folder, "cave_bg.png")).convert_alpha()
         self.bg_image = pg.transform.scale(self.bg_image, (1024, 768))
         self.wall_image = pg.image.load(path.join(self.img_folder, "wall.jpg")).convert_alpha()
+        self.piston_image = pg.image.load(path.join(self.img_folder, "piston.png")).convert_alpha()
         self.fireball_image = pg.image.load(path.join(self.img_folder, "fireball.png")).convert_alpha()
         self.healthboost_image = pg.image.load(path.join(self.img_folder,"healthboost.png")).convert_alpha()
         self.mob_image = pg.image.load(path.join(self.img_folder, "mob.png")).convert_alpha()
@@ -72,6 +73,10 @@ class Game:
                     Pushable(self, col, row)
                 if tile == 'B':
                     self.button = Button(self, col, row)
+                if tile == 'G':
+                    self.piston = Piston(self, col, row)
+                if tile == 'N':
+                    self.buttonpiston = Buttonpiston(self, col, row)
                 
 
     def new(self):
@@ -85,6 +90,8 @@ class Game:
         self.portal = pg.sprite.Group()
         self.pushable = pg.sprite.Group()
         self.buttons = pg.sprite.Group()
+        self.pistons = pg.sprite.Group()
+        self.buttonpistons = pg.sprite.Group()
         # self.player = Player(self, 10, 10)
         # for x in range(10, 20):
         #     Wall(self, x, 5)
@@ -109,6 +116,10 @@ class Game:
                     Pushable(self, col, row)
                 if tile == 'B':
                     self.button = Button(self, col, row)
+                if tile == 'G':
+                    self.piston = Piston(self, col, row)
+                if tile == 'N':
+                    self.buttonpiston = Buttonpiston(self, col, row)
     # define run method in game engine
     def run(self):
         # run method. all important mechanics that need to be checked go here.
