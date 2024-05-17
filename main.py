@@ -9,7 +9,7 @@ from random import randint
 from os import path
 
 # Data types: Int, String, float, Boolean
-# Adding Puzzle elements and dialogue
+# Adding Puzzle elements
 
 
 # creating the game class
