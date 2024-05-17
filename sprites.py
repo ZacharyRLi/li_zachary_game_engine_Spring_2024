@@ -395,7 +395,7 @@ class Portal(Sprite):
         self.rect.y = y * TILESIZE
     
     def portal_update(self):
-        # opens when money >= 5
+        # opens when button is down by pushable
         if self.game.button.down:
             self.image = self.game.portal_open_image
             self.image = pg.transform.scale(self.image, (175, 75))
